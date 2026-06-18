@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>4K指南 WebHome | 美化版</title>
+<style>
+:root{
+    --bg-main:#171c22;
+    --bg-card:rgba(36,44,52,0.85);
+    --bg-soft:rgba(255,255,255,.06);
+    --bg-hover:rgba(255,255,255,.1);
+    --line-light:rgba(255,255,255,.12);
+    --line-accent:rgba(255,184,107,.4);
+    --text-primary:#f7fbff;
+    --text-muted:rgba(247,251,255,.62);
+    --text-light:rgba(247,251,255,.8);
+    --accent:#ffb86b;
+    --accent-light:#ffd399;
+    --accent-dark:#e6994c;
+    --shadow-card:0 8px 24px rgba(0,0,0,0.32);
+    --shadow-hover:0 12px 32px rgba(0,0,0,0.45);
+    --radius-sm:999px;
+    --radius-md:14px;
+    --radius-lg:20px;
+    --radius-xl:26px;
+    --transition:all 0.24s ease;
+}
+*{box-sizing:border-box}
+html,body{
+    margin:0;
+    min-height:100%;
+    background:transparent;
+    color:var(--text-primary);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;
+    letter-spacing:0.3px;
+}
+html:not(.fm-native),html:not(.fm-native) body{
+    background:linear-gradient(145deg,#171c22,#1d252d);
+}
+.app{
+    min-height:100vh;
+    padding:12px 12px 40px;
+}
+/* 顶部导航栏 */
+.bar{
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-bottom:14px;
+}
+.brand{
+    font-size:22px;
+    font-weight:900;
+    white-space:nowrap;
+    background:linear-gradient(90deg,#fff,var(--accent));
+    -webkit-background-clip:text;
+    color:transparent;
+}
+.brand b{
+    color:var(--accent);
+}
+/* 搜索框美化 */
+.search{
+    flex:1;
+    display:flex;
+    gap:8px;
+    align-items:center;
+    background:var(--bg-soft);
+    border:1px solid var(--line-light);
+    border-radius:var(--radius-sm);
+    padding:8px 10px 8px 16px;
+    transition:var(--transition);
+}
+.search:focus-within{
+    border-color:var(--line-accent);
+    background:var(--bg-hover);
+    box-shadow:0 0 0 3px rgba(255,184,107,0.12);
+}
+.search input{
+    flex:1;
+    min-width:0;
+    background:transparent;
+    border:0;
+    outline:0;
+    color:var(--text-primary);
+    font-size:15px;
+}
+.search input::placeholder{
+    color:var(--text-muted);
+}
+/* 通用按钮 */
+.btn,.search button{
+    border:1px solid var(--line-light);
+    background:var(--bg-soft);
+    color:var(--text-primary);
+    border-radius:var(--radius-sm);
+    padding:9px 14px;
+    font-size:14px;
+    cursor:pointer;
+    transition:var(--transition);
+}
+.btn:hover,.search button:hover{
+    background:var(--bg-hover);
+    transform:translateY(-1px);
+}
+.btn:active,.search button:active{
+    transform:translateY(0);
+}
+.primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+    color:#191008;
+    font-weight:900;
+    border:none;
+}
+.primary:hover{
+    background:linear-gradient(135deg,var(--accent-light),var(--accent));
+}
+/* 分类标签栏 */
+.tabs{
+    display:flex;
+    gap:10px;
+    overflow:auto;
+    padding:4px 2px 12px;
+    scrollbar-width:none;
+    margin-bottom:6px;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+    white-space:nowrap;
+    border-radius:var(--radius-sm);
+    padding:9px 16px;
+    background:var(--bg-soft);
+    border:1px solid var(--line-light);
+    color:var(--text-muted);
+    font-size:14px;
+    cursor:pointer;
+    transition:var(--transition);
+}
+.tab:hover{
+    background:var(--bg-hover);
+    color:var(--text-light);
+}
+.tab.active{
+    background:linear-gradient(135deg,rgba(255,184,107,.22),rgba(255,184,107,.1));
+    border-color:var(--line-accent);
+    color:var(--text-primary);
+    font-weight:900;
+}
+/* 状态提示文字 */
+.status{
+    margin:8px 4px 14px;
+    color:var(--text-muted);
+    font-size:14px;
+}
+/* 网格布局 */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:14px;
+}
+/* 资源卡片 */
+.card{
+    border-radius:var(--radius-md);
+    overflow:hidden;
+    background:var(--bg-card);
+    border:1px solid var(--line-light);
+    box-shadow:var(--shadow-card);
+    transition:var(--transition);
+    cursor:pointer;
+}
+.card:hover{
+    transform:translateY(-6px);
+    box-shadow:var(--shadow-hover);
+    border-color:var(--line-accent);
+}
+.poster{
+    aspect-ratio:3/4;
+    background:linear-gradient(145deg,#2a323b,#222930);
+    position:relative;
+    overflow:hidden;
+}
+.poster img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform 0.3s ease;
+}
+.card:hover .poster img{
+    transform:scale(1.06);
+}
+.noimg{
+    height:100%;
+    display:grid;
+    place-items:center;
+    color:var(--text-muted);
+    font-size:28px;
+    background:linear-gradient(145deg,#2a323b,#222930);
+}
+.badge{
+    position:absolute;
+    right:8px;
+    top:8px;
+    padding:4px 9px;
+    border-radius:var(--radius-sm);
+    background:rgba(0,0,0,.65);
+    font-size:11px;
+    font-weight:900;
+    backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.1);
+}
+.meta{
+    padding:10px 10px 12px;
+}
+.name{
+    font-weight:900;
+    font-size:13px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.remark{
+    margin-top:5px;
+    color:var(--text-muted);
+    font-size:11px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+/* 分页按钮 */
+.pager{
+    display:flex;
+    gap:10px;
+    justify-content:center;
+    margin:22px 0 10px;
+}
+.pager button:disabled{
+    opacity:0.35;
+    cursor:not-allowed;
+    transform:none !important;
+}
+/* 详情弹窗 */
+.sheet{
+    position:fixed;
+    inset:0;
+    z-index:40;
+    display:none;
+    background:rgba(0,0,0,0.65);
+    backdrop-filter:blur(6px);
+    overflow:auto;
+    padding:16px 10px;
+    animation:fadeIn 0.2s ease;
+}
+.sheet.active{display:block}
+@keyframes fadeIn{
+    from{opacity:0}
+    to{opacity:1}
+}
+.panel{
+    background:linear-gradient(145deg,rgba(32,39,46,.96),rgba(39,47,55,.96));
+    border:1px solid var(--line-light);
+    border-radius:var(--radius-xl);
+    padding:20px 16px 28px;
+    margin:0 auto 42px;
+    max-width:100%;
+    box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+/* 详情头部信息 */
+.head{
+    display:grid;
+    grid-template-columns:38% 1fr;
+    gap:16px;
+    margin-bottom:18px;
+}
+.pic{
+    width:100%;
+    aspect-ratio:3/4;
+    object-fit:cover;
+    border-radius:var(--radius-md);
+    background:linear-gradient(145deg,#2a323b,#222930);
+    box-shadow:0 6px 16px rgba(0,0,0,0.35);
+}
+.title{
+    font-size:24px;
+    font-weight:800;
+    line-height:1.25;
+    margin-bottom:10px;
+    background:linear-gradient(90deg,#fff,var(--accent));
+    -webkit-background-clip:text;
+    color:transparent;
+}
+.info{
+    font-size:14px;
+    line-height:1.7;
+    color:rgba(255,255,255,.75);
+    max-height:240px;
+    overflow:hidden;
+}
+.info div{margin:4px 0}
+/* 分类标签 */
+.pill{
+    display:inline-block;
+    margin:20px 0 12px;
+    padding:9px 20px;
+    border-radius:var(--radius-sm);
+    background:var(--bg-soft);
+    border:1px solid var(--line-accent);
+    font-size:15px;
+    font-weight:900;
+    color:var(--accent);
+}
+.desc{
+    font-size:15px;
+    line-height:1.8;
+    color:rgba(255,255,255,.72);
+}
+/* 网盘资源列表 */
+.pan-list{
+    display:grid;
+    gap:12px;
+    margin-top:8px;
+}
+.pan-item{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    gap:12px;
+    align-items:center;
+    padding:14px;
+    border-radius:var(--radius-md);
+    background:var(--bg-soft);
+    border:1px solid var(--line-light);
+    transition:var(--transition);
+}
+.pan-item:hover{
+    background:var(--bg-hover);
+    border-color:var(--line-accent);
+}
+.pan-type{
+    padding:5px 10px;
+    border-radius:var(--radius-sm);
+    background:rgba(255,184,107,.18);
+    color:var(--accent);
+    font-size:12px;
+    font-weight:900;
+    white-space:nowrap;
+}
+.pan-name{
+    font-size:15px;
+    font-weight:900;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+.pan-meta{
+    margin-top:4px;
+    color:var(--text-muted);
+    font-size:12px;
+    word-break:break-all;
+}
+/* 空状态 */
+.empty{
+    padding:40px 20px;
+    text-align:center;
+    color:var(--text-muted);
+    background:var(--bg-soft);
+    border:1px dashed var(--line-light);
+    border-radius:var(--radius-md);
+    font-size:14px;
+}
+/* 板块标题 */
+.section{margin-bottom:28px}
+.section-title h2{
+    font-size:18px;
+    margin:0 0 12px;
+    color:var(--text-light);
+    font-weight:800;
+    padding-left:6px;
+    border-left:3px solid var(--accent);
+}
+/* 平板适配 */
+@media(min-width:720px){
+    .grid{grid-template-columns:repeat(5,1fr)}
+    .app{padding:20px 32px 48px}
+    .head{grid-template-columns:200px 1fr}
+    .pic{width:200px}
+}
+/* 桌面大屏适配 */
+@media(min-width:1100px){
+    .grid{grid-template-columns:repeat(7,1fr)}
+    .app{max-width:1420px;margin:0 auto}
+    .sheet{max-width:1240px;margin:0 auto}
+}
+</style>
+</head>
+<body>
+<div class="app">
+    <div class="bar">
+        <div class="brand">4K<b>指南</b></div>
+        <form class="search" id="searchForm">
+            <input id="kw" placeholder="搜索4K原盘、电影、剧集…">
+            <button>搜索</button>
+        </form>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="status" id="status">准备加载…</div>
+    <main id="content"></main>
+</div>
+<div class="sheet" id="sheet">
+    <div class="panel" id="panel"></div>
+</div>
+<script>
+(function(){'use strict';if(window.fongmiBridge||window.fm)document.documentElement.classList.add('fm-native');
+const BASE='https://4kzn.com',UA='Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/120 Mobile Safari/537.36';
+const CATS=[['home','首页','/'],['latest','最新','/books/zuixin'],['movie','电影','/books/dianying'],['tv','剧集','/books/juji'],['series','系列合集','/books/xiliehj'],['top','豆瓣TOP250','/books/top250'],['conan','柯南合集','/books/mztkn'],['marvel','漫威合集','/books/manwei'],['hannibal','汉尼拔合集','/books/hanniba']];
+let active='home',page=1,currentUrl=BASE+'/';
+const $=s=>document.querySelector(s),content=$('#content'),status=$('#status'),tabs=$('#tabs');
+function abs(u){try{return new URL(u,BASE+'/').href}catch(e){return u||''}}
+function esc(s){return String(s||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'"'}[c]))}
+function clean(s){return String(s||'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim()}
+function decode(s){let t=document.createElement('textarea');t.innerHTML=s||'';return t.value}
+function img(u){u=decode(String(u||''));if(u.startsWith('//'))u='https:'+u;if(u.startsWith('http://'))u='https://'+u.slice(7);return u}
+async function req(url){url=abs(url);status.textContent='加载：'+url;if(window.fm&&fm.req){const r=await fm.req(url,{method:'GET',headers:{'User-Agent':UA,'Referer':BASE+'/'},responseType:'text',timeout:25});if(!r.ok)throw new Error(r.error||('HTTP '+r.status));return r.body||''}const r=await fetch(url,{headers:{'User-Agent':UA,'Referer':BASE+'/'}});return await r.text()}
+function doc(h){return new DOMParser().parseFromString(h,'text/html')}
+function renderTabs(){tabs.innerHTML=CATS.map(x=>`<button class="tab ${active===x[0]?'active':''}" data-id="${x[0]}">${x[1]}</button>`).join('');tabs.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{let c=CATS.find(x=>x[0]===b.dataset.id);active=c[0];page=1;loadList(c[2])})}
+function cardFromArticle(el){let a=el.querySelector('a[href*="/book/"]');if(!a)return null;let href=abs(a.getAttribute('href')||'');let im=el.querySelector('img');let pic=im?img(im.getAttribute('data-src')||im.getAttribute('src')||''):'';let title=decode(a.getAttribute('title')||im?.getAttribute('alt')||clean(el.querySelector('.item-title')?.textContent)||clean(a.textContent));let remark=clean(el.querySelector('.text-muted')?.textContent||el.textContent.replace(title,''));if(!title||!/\/book\/\d+\.html/.test(href))return null;return{title:clean(title),href,image:pic,remark:remark.slice(0,50)}}
+function unique(arr){let m=new Map();arr.forEach(x=>{if(x&&x.href&&!m.has(x.href))m.set(x.href,x)});return[...m.values()]}
+function parseList(html){let d=doc(html);let nodes=[...d.querySelectorAll('article.book-item,.posts-item.book-item,.book-item')];let items=unique(nodes.map(cardFromArticle)).filter(Boolean);if(!items.length)items=unique([...d.querySelectorAll('a[href*="/book/"]')].map(a=>cardFromArticle(a.closest('article,.book-item,.posts-item,.col-6,.col-md-3')||a.parentElement||a))).filter(Boolean);return items}
+function parseHomeSections(html){let d=doc(html),secs=[];d.querySelectorAll('.content-card').forEach(card=>{let title=clean(card.querySelector('h4.tab-title')?.textContent)||'';let items=unique([...card.querySelectorAll('article.book-item')].map(cardFromArticle)).filter(Boolean);if(title&&items.length)secs.push({title,items:items.slice(0,24)})});if(!secs.length)secs=[{title:'资源列表',items:parseList(html).slice(0,80)}];return secs}
+function cardHtml(it,i){let b=(it.remark.match(/4K[^\s]*|1080P[^\s]*|合集|WEB/)||['原盘'])[0];return`<article class="card" data-i="${i}"><div class="poster">${it.image?`<img loading="lazy" referrerpolicy="no-referrer" src="${esc(it.image)}">`:'<div class="noimg">4K</div>'}<span class="badge">${esc(b)}</span></div><div class="meta"><div class="name">${esc(it.title)}</div><div class="remark">${esc(it.remark||'点击查看资源')}</div></div></article>`}
+function renderGrid(items){content.innerHTML=items.length?`<div class="grid">${items.map(cardHtml).join('')}</div><div class="pager"><button id="prev" ${page<=1?'disabled':''}>上一页</button><button id="next">下一页</button></div>`:'<div class="empty">暂无内容</div>';content.querySelectorAll('.card').forEach(c=>c.onclick=()=>openDetail(items[parseInt(c.dataset.i)]));let p=$('#prev'),n=$('#next');if(p)p.onclick=()=>{if(page>1){page--;loadList(currentUrl)}};if(n)n.onclick=()=>{page++;loadList(currentUrl)}}
+function renderSections(secs){let all=[];secs.forEach(s=>all=all.concat(s.items));content.innerHTML=secs.map(sec=>`<section class="section"><div class="section-title"><h2>${esc(sec.title)}</h2></div><div class="grid">${sec.items.map((x,i)=>cardHtml(x,all.indexOf(x))).join('')}</div></section>`).join('')||'<div class="empty">暂无内容</div>';content.querySelectorAll('.card').forEach(c=>openBind(c,all))}
+function openBind(c,all){c.onclick=()=>openDetail(all[parseInt(c.dataset.i)])}
+function pageUrl(url,p){url=abs(url);if(p<=1)return url.replace(/\/page\/\d+\/?$/,'/');let u=new URL(url);let path=u.pathname.replace(/\/page\/\d+\/?$/,'/').replace(/\/$/,'');u.pathname=path+'/page/'+p+'/';return u.href}
+async function loadList(path){renderTabs();currentUrl=abs(path);content.innerHTML='<div class="empty">加载中…</div>';try{let url=active==='home'?BASE+'/':pageUrl(currentUrl,page);let html=await req(url);if(active==='home'){renderSections(parseHomeSections(html));status.textContent='首页已加载'}else{let items=parseList(html);renderGrid(items);status.textContent=`${(CATS.find(x=>x[0]===active)||[])[1]||''} 第 ${page} 页 · ${items.length} 条`}}catch(e){content.innerHTML='<div class="empty">加载失败：'+esc(e.message)+'</div>';status.textContent='加载失败'}}
+async function search(q){q=clean(q);if(!q)return;active='search';renderTabs();page=1;content.innerHTML='<div class="empty">搜索中…</div>';try{let html=await req(BASE+'/?s='+encodeURIComponent(q));let items=parseList(html);renderGrid(items);status.textContent='搜索完成：'+q}catch(e){content.innerHTML='<div class="empty">搜索失败：'+esc(e.message)+'</div>'}}
+function panType(u,t){u=String(u||'').toLowerCase();t=String(t||'');if(u.includes('quark'))return'夸克';if(u.includes('pan.baidu'))return'百度';if(u.includes('aliyun')||u.includes('alipan'))return'阿里';if(u.includes('xunlei'))return'迅雷';if(u.includes('115.com'))return'115';if(u.includes('magnet:'))return'磁力';return /夸克|百度|阿里|迅雷|115/.test(t)?t:'网盘'}
+function parseDetail(html,it){let d=doc(html),title=clean(d.querySelector('h1,.book-title,.item-title')?.textContent)||it.title;let im=d.querySelector('.book-content img,.item-image img,.single-content img,img[data-src]');let pic=im?img(im.getAttribute('data-src')||im.getAttribute('src')||''):it.image;let root=d.querySelector('.book-content,.entry-content,.single-content,article,.content')||d.body;let raw=clean(root.textContent);let desc=raw.replace(title,'').replace(/暂无评论[\s\S]*$/,'').slice(0,500);let info=[];['导演','编剧','主演','类型','制片国家/地区','语言','上映日期','片长','又名','IMDb'].forEach(k=>{let m=raw.match(new RegExp(k+'[:：]\\s*([^\\n]+?)(?=导演|编剧|主演|类型|制片国家|语言|上映日期|片长|又名|IMDb|$)'));if(m)info.push([k,clean(m[1]).slice(0,160)])});let links=[];d.querySelectorAll('a[href]').forEach(a=>{let href=decode(a.getAttribute('href')||''),tx=clean(a.textContent);if(/quark|pan\.baidu|aliyun|alipan|xunlei|115\.com|magnet:/i.test(href+tx))links.push({name:tx||panType(href,tx),url:abs(href),type:panType(href,tx)})});return{title,pic,desc,info,links}}
+async function openDetail(it){$('#sheet').classList.add('active');$('#panel').innerHTML='<div class="empty">读取详情…</div>';try{let h=await req(it.href),d=parseDetail(h,it);$('#panel').innerHTML=`<button class="btn" id="closeBtn">返回</button><div class="head"><img class="pic" referrerpolicy="no-referrer" src="${esc(d.pic)}" onerror="this.style.display='none'"><div><div class="title">${esc(d.title)}</div><div class="info">${d.info.map(x=>`<div><b>${esc(x[0])}：</b>${esc(x[1])}</div>`).join('')}<div><b>清晰度：</b>${esc(it.remark||'')}</div></div></div></div><div class="pill">简介</div><div class="desc">${esc(d.desc||'暂无简介')}</div><div class="pill">网盘资源 (${d.links.length})</div><div class="pan-list">${d.links.map((x,i)=>`<div class="pan-item"><span class="pan-type">${esc(x.type)}</span><div><div class="pan-name">${esc(x.name||x.type)}</div><div class="pan-meta">${esc(x.url)}</div></div><button class="btn primary" data-i="${i}">打开</button></div>`).join('')||'<div class="empty">未提取到网盘链接，可能需要登录或资源隐藏</div>'}</div>`;$('#closeBtn').onclick=closeDetail;$('#panel').querySelectorAll('button[data-i]').forEach(b=>b.onclick=()=>openPan(d.links[parseInt(b.dataset.i)]))}catch(e){$('#panel').innerHTML='<button class="btn" onclick="window.__close4kzn()">返回</button><div class="empty">详情失败：'+esc(e.message)+'</div>'}}
+async function openPan(x){if(!x||!x.url)return;if(window.fm&&fm.play){await fm.play(x.url,x.name||x.type);return}location.href=x.url}
+function closeDetail(){$('#sheet').classList.remove('active')}
+$('#searchForm').onsubmit=e=>{e.preventDefault();search($('#kw').value)};window.__close4kzn=closeDetail;loadList('/');
+})();
+</script>
+</body>
+</html>
