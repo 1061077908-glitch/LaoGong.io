@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b1324">
+<title>PanSo 盘搜 - 影视网盘检索</title>
+<script>
+// 低版本浏览器兼容补丁
+window.WEBHOME_PAGE_OPENED_AT = Date.now();
+if(window.fongmiBridge) document.documentElement.classList.add("fm-native");
+(function(){var pList=[Element,Document,DocumentFragment];for(var t of pList){if(!t?.prototype?.replaceChildren)t.prototype.replaceChildren=function(){while(this.firstChild)this.removeChild(this.firstChild);for(var i=0;i<arguments.length;i++)this.appendChild(arguments[i]?.nodeType?arguments[i]:document.createTextNode(String(arguments[i])))};}if(!Element.prototype.matches)Element.prototype.matches=Element.prototype.msMatchesSelector||Element.prototype.webkitMatchesSelector;if(!Element.prototype.closest)Element.prototype.closest=function(e){let el=this;while(el&&el.nodeType===1){if(el.matches(e))return el;el=el.parentNode}return null};if(!Object.values)Object.values=o=>Object.keys(o).map(k=>o[k]);if(!Object.entries)Object.entries=o=>Object.keys(o).map(k=>[k,o[k]]);if(!Array.from)Array.from=function(v,m,a){let r=[],it=typeof Symbol!="undefined"&&v[Symbol.iterator];let i=0;if(it){let s;while(!(s=it.next()).done)r.push(m?m.call(a,s.value,i++):s.value);return r}let l=v.length||0;for(;i<l;i++)r.push(m?m.call(a,v[i]):v[i]);return r};if(!NodeList.prototype.forEach)NodeList.prototype.forEach=Array.prototype.forEach;if(!HTMLCollection.prototype.forEach)HTMLCollection.prototype.forEach=Array.prototype.forEach;if(!Array.prototype.includes)Array.prototype.includes=function(v,i=0){return this.indexOf(v,i)!==-1};if(!Array.prototype.flat)Array.prototype.flat=function(d){let m=d==null?1:Number(d)||0;let f=(arr,l)=>{let a=[];for(let x of arr)if(Array.isArray(x)&&l<m)a.push(...f(x,l+1));else a.push(x);return a};return f(this,0)};if(!Array.prototype.flatMap)Array.prototype.flatMap=function(c,a){return this.map(c,a).flat()};if(!String.prototype.includes)String.prototype.includes=function(s,i=0){return this.indexOf(s,i)!==-1};if(!String.startsWith)String.prototype.startsWith=function(s,i=0){return this.substr(i||0,s.length)===s};if(!String.endsWith)String.prototype.endsWith=function(s,l){let v=String(this),e=l==null?v.length:Math.min(Number(l)||0,v.length);return v.substring(e-s.length,e)===s};if(Promise&&!Promise.finally)Promise.prototype.finally=function(c){let P=this.constructor;return this.then(v=>P.resolve(c).then(()=>v),r=>P.resolve(c).then(()=>{throw r}))}})();
+</script>
+<style>
+:root {
+  color-scheme: dark;
+  --bg-main: #0b1324;
+  --bg-deep: #070d1a;
+  --glass-base: rgba(22, 36, 64, 0.36);
+  --glass-heavy: rgba(28, 44, 78, 0.55);
+  --glass-bright: rgba(255, 255, 255, 0.07);
+  --line-thin: rgba(130, 175, 240, 0.12);
+  --line-bold: rgba(130, 175, 240, 0.24);
+  --text-primary: #f0f6ff;
+  --text-muted: rgba(176, 200, 235, 0.65);
+  --accent-blue: #57a8ff;
+  --accent-gradient: linear-gradient(135deg, #3a8fff, #66c3ff);
+  --success-teal: #48d0b8;
+  --danger-red: #ff6370;
+  --shadow-soft: 0 6px 22px rgba(0, 12, 30, 0.35);
+  --shadow-deep: 0 18px 55px rgba(0, 6, 20, 0.55);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-full: 999px;
+  --blur-sm: blur(12px);
+  --blur-heavy: blur(24px);
+  --transition-fast: all 0.16s cubic-bezier(0.2, 1, 0.3, 1);
+  --transition-slow: all 0.32s cubic-bezier(0.2, 1, 0.3, 1);
+  --fm-safe-bottom: 18px;
+}
+* {box-sizing: border-box;margin:0;padding:0;-webkit-font-smoothing: antialiased;}
+html {scroll-behavior: smooth;-webkit-tap-highlight-color: transparent;}
+html,body {width:100%;min-height:100dvh;background:var(--bg-main);color:var(--text-primary);overflow-x:hidden;font-family:system-ui, -apple-system, PingFang SC, Microsoft YaHei, sans-serif;}
+html.fm-native, body {background: transparent;}
+button,input {border:0;outline:none;font:inherit;color:inherit;background:transparent;}
+button {cursor:pointer;}
+img {display:block;width:100%;object-fit:cover;}
+/* 滚动条美化 */
+::-webkit-scrollbar {width:6px;height:6px;}
+::-webkit-scrollbar-track {background:rgba(130,175,240,0.04);border-radius:var(--radius-full);}
+::-webkit-scrollbar-thumb {background:rgba(130,175,240,0.16);border-radius:var(--radius-full);}
+/* 页面容器 */
+.app {padding:max(14px,env(safe-area-inset-top)) 16px calc(20px + var(--fm-safe-bottom) + env(safe-area-inset-bottom));min-height:100dvh;}
+body.detail-active .app {visibility:hidden;opacity:0;pointer-events:none;}
+/* 玻璃按钮 图标放大适配 */
+.btn {
+  position:relative;display:inline-flex;align-items:center;justify:center;gap:10;
+  min-height:48;padding:0 20;border-radius:var(--radius-md);border:1px solid var(--line-thin);
+  background:var(--glass-base);backdrop-filter:var(--blur-sm);
+  transition:var(--transition-fast);font-weight:600;font-size:15;overflow:hidden;
+}
+.btn::before {content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,0.14),transparent 60%);pointer-events:none;z-index:1;}
+.btn > * {position:relative;z-index:2;}
+.btn:hover {background:var(--glass-bright);transform:translateY(-2px);box-shadow:var(--shadow-soft);border-color:var(--line-bold);}
+.btn:active {transform:translateY(1px) scale(0.97);transition:0.08s;}
+.btn.primary {background:var(--accent-gradient);border:none;color:#081022;}
+.btn.danger {border-color:rgba(255,99,112,0.25);background:rgba(255,99,112,0.1);color:var(--danger-red);}
+/* 顶部工具栏 */
+.tool-bar {display:flex;flex-wrap:wrap;gap:10;margin-bottom:18px;}
+/* 搜索区域 */
+.search-box {margin-bottom:16px;}
+.search-form {display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10;}
+#searchInput {min-height:48;padding:0 24;border-radius:var(--radius-full);background:var(--glass-base);border:1px solid var(--line-thin);font-size:16;transition:var(--transition-fast);}
+#searchInput:focus {border-color:var(--accent-blue);box-shadow:0 0 0 3px rgba(87,168,255,0.14);}
+#searchInput::placeholder {color:var(--text-muted);}
+/* 分类横向标签 */
+.chip-wrap {overflow-x:auto;padding:6px 0 12;margin-bottom:12;}
+.chip-bar {display:flex;gap:8;width:max-content;}
+.chip {padding:0 20;min-height:40;border-radius:var(--radius-full);background:transparent;border:none;color:var(--text-muted);font-size:15;font-weight:600;white-space:nowrap;transition:var(--transition-fast);}
+.chip:hover {background:var(--glass-base);color:var(--text-primary);}
+.chip.active {background:var(--glass-heavy);color:var(--accent-blue);border:1px solid var(--line-bold);box-shadow:0 0 12px rgba(87,168,255,0.16);}
+/* 清空按钮栏（收藏/历史专用） */
+.clear-area {display:none;margin:8px 0 14;gap:10;}
+.clear-area.show {display:flex;}
+/* 板块标题 */
+.section-head {display:flex;justify-content:space-between;align-items:center;margin-bottom:12;}
+.section-title {font-size:20;font-weight:700;letter-spacing:0.3px;}
+.section-opt {display:flex;gap:8;}
+/* 海报网格布局 */
+.media-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(140,1fr));gap:16;margin-bottom:24;}
+.card {border-radius:var(--radius-md);overflow:hidden;background:var(--glass-base);border:1px solid var(--line-thin);transition:var(--transition-slow);cursor:pointer;}
+.card:hover {transform:translateY(-8px) scale(1.04);box-shadow:var(--shadow-deep);border-color:rgba(87,168,255,0.22);}
+.poster-box {aspect-ratio:2/3;position:relative;overflow:hidden;}
+.poster-box img {transition:var(--transition-slow);}
+.card:hover .poster-box img {transform:scale(1.12);}
+/* 卡片图标全部放大 */
+.quality-tag {position:absolute;top:10;left:10;padding:3 10;font-size:12;border-radius:6;background:rgba(0,8,22,0.55);backdrop-filter:var(--blur-sm);}
+.fav-icon {position:absolute;top:10;right:10;width:36;height:36;border-radius:50%;background:rgba(0,8,22,0.5);backdrop-filter:var(--blur-sm);color:#fff;font-size:22;display:grid;place-items:center;z-index:2;}
+.fav-icon.active {color:#ff6370;}
+.card-info {padding:12;}
+.card-name {font-size:14;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5;}
+.card-sub {font-size:12;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* 网盘结果列表 */
+.pan-list {display:grid;gap:12;}
+.pan-item {display:grid;grid-template-columns:auto 1fr auto auto;gap:14;align-items:center;padding:16;border-radius:var(--radius-md);background:var(--glass-heavy);border:1px solid var(--line-thin);}
+.pan-type {padding:4 12;border-radius:var(--radius-full);font-size:13;background:rgba(87,168,255,0.12);color:var(--accent-blue);}
+.pan-link {font-size:12;color:var(--text-muted);word-break:break-all;}
+/* 空状态 */
+.empty-tip {padding:44 20;text-align:center;color:var(--text-muted);border:1px dashed var(--line-thin);border-radius:var(--radius-md);background:var(--glass-base);font-size:15;}
+/* 返回顶部悬浮按钮 加大尺寸 */
+.back-top {position:fixed;right:18;bottom:calc(24px + var(--fm-safe-bottom));z-index:50;width:56;height:56;font-size:26;opacity:0;visibility:hidden;transition:var(--transition-fast);}
+.back-top.show {opacity:1;visibility:visible;}
+/* 沉浸详情弹窗 */
+.detail-sheet {position:fixed;inset:0;z-index:60;display:none;overflow-y:auto;padding:16;}
+.detail-sheet.active {display:block;}
+.detail-bg {position:fixed;inset:0;z-index:-2;background-size:cover;background-position:center top;opacity:0;transition:opacity 0.45s ease;filter:brightness(0.68) saturate(1.05);}
+.detail-sheet.active .detail-bg {opacity:1;}
+.blur-mask {position:fixed;inset:0;z-index:-1;backdrop-filter:var(--blur-heavy);mask-image:linear-gradient(transparent 32%,rgba(0,6,18,0.72) 78%);}
+.detail-wrap {max-width:1180;margin:0 auto;padding-top:10;}
+.detail-top {display:flex;gap:24;margin-bottom:28;}
+.detail-pic {flex:0 0 230;border-radius:var(--radius-md);overflow:hidden;}
+.detail-text {flex:1;}
+.detail-title {font-size:30;font-weight:80;margin-bottom:12;}
+.meta-row {display:flex;flex-wrap:wrap;gap:10;margin-bottom:18;}
+.meta-tag {padding:4 12;border-radius:var(--radius-full);font-size:13;background:var(--glass-base);color:var(--text-muted);}
+.desc-text {line-height:1.7;color:var(--text-muted);margin-bottom:30;}
+/* 确认弹窗 */
+.confirm-mask {position:fixed;inset:0;z-index:9999;display:none;background:rgba(0,4,12,0.78);backdrop-filter:var(--blur-sm);align-items:center;justify:center;padding:16;}
+.confirm-mask.show {display:flex;}
+.confirm-box {width:min(90%,480);padding:32;border-radius:var(--radius-md);background:var(--glass-heavy);border:1px solid var(--line-bold);box-shadow:var(--shadow-deep);}
+.confirm-text {font-size:17;margin-bottom:28;line-height:1.6;}
+.confirm-buttons {display:flex;gap:14;justify-content:flex-end;}
+/* TV 性能优化 关闭模糊动画 */
+html.tv-mode * {animation-duration:0.01ms !important;backdrop-filter:none !important;-webkit-backdrop-filter:none !important;transition-duration:0.06s !important;}
+@media(min-width:720px) {.media-grid {grid-template-columns:repeat(4,minmax(150,1fr));}.detail-top {gap:32;}.detail-pic {flex:0 0 260;}}
+@media(min-width:1200px) {.app {max-width:1440;margin:0 auto;}.media-grid {grid-template-columns:repeat(6,minmax(160,1fr));}}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- 顶部功能栏 -->
+  <div class="tool-bar">
+    <button class="btn" id="appSetBtn">APP设置</button>
+    <button class="btn" id="themeSwitch">明暗主题</button>
+    <button class="btn" id="exportFav">导出收藏</button>
+    <button class="btn primary" id="copyAllPan">批量复制网盘</button>
+  </div>
+  <!-- 搜索框 -->
+  <div class="search-box">
+    <form class="search-form" id="searchForm">
+      <input id="searchInput" placeholder="输入影视/资料关键词搜索PanSo盘搜">
+      <button class="btn primary" type="submit">搜索</button>
+    </form>
+  </div>
+  <!-- 清空按钮区域 -->
+  <div class="clear-area" id="clearWrap">
+    <button class="btn danger" id="clearHistory">清空浏览记录</button>
+    <button class="btn danger" id="clearFavList">清空全部收藏</button>
+  </div>
+  <!-- 分类标签 -->
+  <div class="chip-wrap">
+    <div class="chip-bar" id="chipBar"></div>
+  </div>
+  <!-- 内容标题 -->
+  <div class="section-head">
+    <h2 class="section-title" id="pageTitle">全网影视资源</h2>
+    <div class="section-opt">
+      <button class="btn" id="refreshBtn">刷新</button>
+    </div>
+  </div>
+  <!-- 海报网格区域 -->
+  <div class="media-grid" id="mediaGrid"></div>
+  <!-- 网盘资源列表区域 -->
+  <div id="panSection" style="display:none;">
+    <h3 style="margin:10px 0 12;">匹配网盘资源</h3>
+    <div class="pan-list" id="panListBox"></div>
+  </div>
+</div>
+<!-- 返回顶部 -->
+<button class="btn back-top" id="backTopBtn">↑</button>
+<!-- 详情沉浸弹窗 -->
+<div class="detail-sheet" id="detailSheet">
+  <div class="detail-bg" id="heroBg"></div>
+  <div class="blur-mask"></div>
+  <div class="detail-wrap">
+    <button class="btn" id="closeDetail">← 返回列表</button>
+    <div class="detail-top">
+      <div class="detail-pic" id="detailImgBox"></div>
+      <div class="detail-text">
+        <h1 class="detail-title" id="detailTitle"></h1>
+        <div class="meta-row" id="metaWrap"></div>
+        <p class="desc-text" id="detailDesc"></p>
+        <div class="pan-list" id="detailPanBox"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- 确认弹窗 -->
+<div class="confirm-mask" id="confirmMask">
+  <div class="confirm-box">
+    <p class="confirm-text" id="confirmTip"></p>
+    <div class="confirm-buttons">
+      <button class="btn" id="cancelClear">取消</button>
+      <button class="btn primary" id="okClear">确认清空</button>
+    </div>
+  </div>
+</div>
+<script>(function(){
+// 本地存储KEY
+const STORAGE_FAV = "panso_fav";
+const STORAGE_HIST = "panso_history";
+const STORAGE_THEME = "panso_dark";
+// 分类数据
+const CATEGORY_LIST = [
+  ["history","浏览记录"],["fav","我的收藏"],["movie","电影"],["tv","电视剧"],["anime","动漫"],["variety","综艺"],["doc","文档资料"],["book","书籍小说"]
+];
+// 模拟盘搜API 本地假数据（可对接真实panso接口）
+let mockResourceData = [
+  {title:翘楚,pic:"https://img9.doubanio.com/view/subject/s3704290/m/public",quality:"1080P",source:"百度网盘",desc:"根据希行同名小说改编古装剧",href:"#res1"},
+  {title:非自然死亡,pic:"https://img3.doubanio.com/view/subject/s2688430/m/public",quality:"4K",source:"夸克网盘",desc:"日系高分法医悬疑剧",href:"#res2"},
+  {title:少年的你,pic:"https://img3.doubanio.com/view/subject/s3178036/m/public",quality:"HD",source:"阿里云盘",desc:"校园霸凌现实题材电影",href:"#res3"},
+  {title:搜神记动画,pic:"https://img3.doubanio.com/view/subject/s3491205/m/public",quality:"1080P",source:"115网盘",desc:"上古蛮荒玄幻动画",href:"#res4"},
+  {title:皇城诡案,pic:"https://img3.doubanio.com/view/subject/s3651012/m/public",quality:"HD",source:"百度网盘",desc:"古装悬疑探案短剧",href:"#res5"},
+  {title:美国往事,pic:"https://img3.doubanio.com/view/subject/s109020/m/public",quality:"REMUX",source:"迅雷云盘",desc:"经典美国黑帮史诗影片",href:"#res6"},
+];
+let favList = JSON.parse(localStorage.getItem(STORAGE_FAV) || "[]");
+let historyList = JSON.parse(localStorage.getItem(STORAGE_HIST) || "[]");
+let darkMode = localStorage.getItem(STORAGE_THEME) === "1";
+let activeCat = "", clearTarget = "", currentPanRes = [];
+const $ = s=>document.querySelector(s);
+const chipBar = $("#chipBar");
+const mediaGrid = $("#mediaGrid");
+const panListBox = $("#panListBox");
+const panSection = $("#panSection");
+const clearWrap = $("#clearWrap");
+const confirmMask = $("#confirmMask");
+const backTopBtn = $("#backTopBtn");
+// 持久化函数
+function saveFav(){localStorage.setItem(STORAGE_FAV,JSON.stringify(favList))}
+function saveHistory(){localStorage.setItem(STORAGE_HIST,JSON.stringify(historyList))}
+function saveTheme(){localStorage.setItem(STORAGE_THEME,dark?"1":"0")}
+function isFav(item){return favList.some(x=>x.href === item.href)}
+function toggleFav(item){
+  const idx = favList.findIndex(x=>x.href === item.href);
+  idx > -1 ? favList.splice(idx,1) : favList.unshift(item);
+  saveFav(); renderMedia(mockResourceData);
+}
+function addHistory(item){
+  let idx = historyList.findIndex(x=>x.href === item.href);
+  if(idx > -1) history.splice(idx);
+  historyList.unshift(item);
+  if(historyList.length > 60) historyList.length = 60;
+  saveHistory();
+}
+// 转义过滤
+function esc(s){return String(s||"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"})[c])}
+// 渲染分类标签
+function renderChips(){
+  chipBar.innerHTML = CATEGORY_LIST.map(c=>`
+    <button class="chip ${activeCat === c[0] ? "active" : ""}" data-cat="${c[0]}">${esc(c[1])}</button>
+  `).join("");
+  chip.querySelectorAll(".chip").forEach(chip=>{
+    chip.onclick = ()=>{
+      activeCat = chip.dataset.cat; renderChips();
+      panSection.style.display = "none";
+      if(activeCat === "history"){
+        clearWrap.classList.add("show"); $("#pageTitle").innerText = "浏览记录"; renderMedia(historyList);
+      }else if(activeCat === "fav"){
+        clearWrap.classList.add("show"); $("#pageTitle").innerText = "我的收藏"; renderMedia(favList);
+      }else{
+        clearWrap.classList.remove("show"); $("#pageTitle").innerText = chip.innerText; renderMedia(mockResourceData);
+      }
+    }
+  })
+}
+// 渲染海报卡片
+function renderMedia(list){
+  mediaGrid.innerHTML = "";
+  if(!list.length){mediaGrid.innerHTML = `<div class="empty-tip">暂无资源</div>`;return;}
+  list.forEach((v,i)=>{
+    const favChar = isFav(v) ? "♥" : "♡";
+    const qTag = v.quality ? `<span class="quality-tag">${esc(v.quality)}</span>` : "";
+    const cardDom = document.createElement("article");
+    cardDom.className = "card";
+    cardDom.dataset.index = i;
+    cardDom.dataset.href = v.href;
+    cardDom.innerHTML = `
+      <div class="poster-box">
+        ${qTag}
+        <button class="fav-icon ${isFav(v) ? "active" : ""}" data-href="${esc(v.href)}">${favChar}</button>
+        ${v.pic ? `<img src="${esc(v.pic)}" loading="lazy" alt="${esc(v.title)}">` : `<div style="height:100%;display:grid;place-items:center;color:var(--text-muted);">无海报</div>`}
+      </div>
+      <div class="card-info">
+        <div class="card-name">${esc(v.title)}</div>
+        <div class="card-sub">${esc(v.source)}</div>
+      </div>
+    `;
+    // 收藏按钮点击
+    cardDom.querySelector(".fav-icon").onclick = e=>{
+      e.stopPropagation();
+      toggleFav(v);
+    }
+    // 卡片打开详情
+    cardDom.onclick = ()=> openDetail(v);
+    mediaGrid.appendChild(cardDom);
+  })
+}
+// 打开沉浸详情
+async function openDetail(item){
+  addHistory(item);
+  document.body.classList.add("detail-active");
+  $("#detailSheet").classList.add("active");
+  $("#heroBg").style.backgroundImage = `url(${esc(item.pic)})`;
+  $("#detailImgBox").innerHTML = item.pic ? `<img src="${esc(item.pic)}">` : "";
+  $("#detailTitle").innerText = item.title;
+  $("#detailDesc").innerText = item.desc || "暂无简介";
+  $("#metaWrap").innerHTML = `
+    <span class="meta-tag">清晰度：${item.quality || "未知"}</span>
+    <span class="meta-tag">网盘：${item.source}</span>
+  `;
+  // 模拟生成多条网盘链接
+  currentPanRes = [
+    {name:"主资源",url:"https://pan.baidu.com/s/xxxx111",type:"百度"},
+    {name:"备用高清",url:"https://pan.quark.cn/s/yyyy222",type:"夸克"}
+  ];
+  // 渲染详情网盘
+  $("#detailPanBox").innerHTML = currentPanRes.map(p=>`
+    <div class="pan-item">
+      <span class="pan-type">${esc(p.type)}</span>
+      <div class="pan-link">${esc(p.url)}</div>
+      <button class="btn copy-btn" data-link="${esc(p.url)}">复制</button>
+      <button class="btn primary open-btn" data-link="${esc(p.url)}">打开</button>
+    </div>`).join("");
+  // 复制按钮绑定
+  document.querySelectorAll(".copy-btn").forEach(btn=>{
+    btn.onclick = async ()=>{
+      try{await navigator.clipboard.writeText(btn.dataset.link);alert("链接已复制")}catch(e){alert(btn.dataset.link)}
+    }
+  })
+  document.querySelectorAll(".open-btn").forEach(btn=>{
+    btn.onclick = ()=>{
+      if(window.fm&&fm.play)fm.play(btn.dataset.link);
+      else location.href = btn.dataset.link;
+    }
+  })
+}
+// 关闭详情
+$("#closeDetail").onclick = ()=>{
+  $("#detailSheet").classList.remove("active");
+  document.body.classList.remove("detail-active");
+}
+// 搜索逻辑
+$("#searchForm").onsubmit = async e=>{
+  e.preventDefault();
+  const kw = $("#searchInput").value.trim();
+  if(!kw) return;
+  panSection.style.display = "none";
+  // 简易本地模糊筛选，可替换真实panso接口请求
+  const filter = mockResourceData.filter(item=>item.title.includes(kw)||item.desc.includes(kw));
+  renderMedia(filter);
+  $("#pageTitle").innerText = `搜索：${esc(kw)}`;
+}
+// 批量复制所有网盘
+$("#copyAllPan").onclick = async ()=>{
+  if(!currentPanRes.length) return alert("暂无网盘链接");
+  const allTxt = currentPanRes.map(p=>p.url).join("\n");
+  await navigator.clipboard.writeText(allTxt);alert("全部网盘链接复制完成");
+}
+// 导出收藏文本备份
+$("#exportFav").onclick = async ()=>{
+  const txt = favList.map(x=>`【${x.title}】${x.href}`).join("\n");
+  await navigator.clipboard.writeText(txt);alert("收藏清单已复制，可备份");
+}
+// APP原生设置
+$("#appSet").onclick = ()=>{
+  if(window.fm&&fm.openSetting) fm.openSetting();
+  else alert("仅WebHTV客户端可用");
+}
+// 明暗主题切换
+$("#themeSwitch").onclick = ()=>{
+  darkMode = !darkMode;
+  document.body.classList.toggle("neon");
+  saveTheme();
+}
+// 刷新页面
+$("#refreshBtn").onclick = ()=>{
+  activeCat = ""; renderChips(); renderMedia(mockResourceData);
+  $("#pageTitle").innerText = "全网影视资源";
+  panSection.style.display = "none";
+}
+// 返回顶部监听
+window.addEventListener("scroll",()=>{
+  if(window.scrollY > 300) backTopBtn.classList.add("show");
+  else backTopBtn.classList.remove("show");
+})
+backTopBtn.onclick = ()=> window.scrollTo({top:0,behavior:"smooth"});
+// 清空弹窗逻辑
+$("#clearHistory").onclick = ()=>{
+  clearTarget = "history";
+  $("#confirmTip").innerText = "确定清空全部浏览记录，数据无法恢复？";
+  confirmMask.classList.add("show");
+}
+$("#clearFavList").onclick = ()=>{
+  clearTarget = "fav";
+  $("#confirmTip").innerText = "确定清空所有收藏影片，数据无法恢复？";
+  confirmMask.classList.add("show");
+}
+$("#cancelClear").onclick = ()=>{confirmMask.classList.remove("show");clearTarget = "";}
+$("#okClear").onclick = ()=>{
+  if(clearTarget === "history"){historyList = []; saveHistory(); renderMedia([]);$("#pageTitle").innerText = "浏览记录";}
+  if(clearTarget === "fav"){favList = []; saveFav();$("#pageTitle").innerText = "我的收藏";renderMedia([]);}
+  confirmMask.classList.remove();alert("清空完成");
+}
+// 初始化
+activeCat = CATEGORY_LIST[2][0];
+renderChips();
+renderMedia(mockResourceData);
+})();
+</script>
+</body>
+</html>
