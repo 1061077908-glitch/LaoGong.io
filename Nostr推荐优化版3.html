@@ -1222,17 +1222,16 @@
 
     .detail-hero-bg {
       position: fixed;
-      inset: -22px;
+      inset: 0;
       z-index: -2;
       background-size: cover;
       background-position: center 10%;
-      filter: brightness(0.78) saturate(1.08);
+      filter: brightness(0.80) saturate(1.05);
       opacity: 0;
       transition: opacity 0.45s cubic-bezier(.25,.8,.30,1),
-                  filter 0.22s ease;
+                  filter 0.18s ease;
       pointer-events: none;
       will-change: opacity, filter;
-      transform: scale(1.035);
     }
 
     #detailSheet.active .detail-hero-bg {
@@ -1244,33 +1243,21 @@
       opacity: 0 !important;
     }
 
-    /* ── 详情页玻璃遮罩：海报若隐若现，不再被整块黑色盖住 ── */
-    .sheet::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background: linear-gradient(180deg,
-        rgba(5,7,10,.02) 0%,
-        rgba(5,7,10,.04) 34%,
-        rgba(5,7,10,.12) 58%,
-        rgba(5,7,10,.42) 78%,
-        rgba(5,7,10,.68) 100%);
-    }
+    /* Scrim removed — no darkening overlay, blur only */
+    .sheet::after { display: none; }
 
-    /* 毛玻璃主要落在内容区，顶部背景保持通透 */
+    /* Blur overlay on lower half — gives text area a frosted glass feel */
     .sheet-blur-layer {
       display: none;
       position: fixed;
       inset: 0;
       z-index: -1;
       pointer-events: none;
-      background: rgba(10,14,20,.08);
-      backdrop-filter: blur(16px) saturate(1.12);
-      -webkit-backdrop-filter: blur(16px) saturate(1.12);
-      -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 43%, rgba(0,0,0,.10) 54%, rgba(0,0,0,.62) 72%, black 88%);
-      mask-image: linear-gradient(180deg, transparent 0%, transparent 43%, rgba(0,0,0,.10) 54%, rgba(0,0,0,.62) 72%, black 88%);
+      backdrop-filter: blur(18px) saturate(1.05);
+      -webkit-backdrop-filter: blur(18px) saturate(1.05);
+      /* mask: clear at top, blurry from 45% down */
+      -webkit-mask-image: linear-gradient(180deg, transparent 0%, transparent 71%, black 81%);
+      mask-image: linear-gradient(180deg, transparent 0%, transparent 71%, black 81%);
     }
 
     .sheet.active .sheet-blur-layer {
@@ -2617,22 +2604,6 @@ html.detail-immersive .detail-hero-bg {
 #detailSheet .sheet-blur-layer {
     transition: backdrop-filter 0.38s ease, -webkit-backdrop-filter 0.38s ease, opacity 0.38s ease;
 }
-/* ══ 详情页「若隐若现毛玻璃」最终覆盖层 ══ */
-#detailSheet.sheet { isolation: isolate; background: transparent !important; }
-#detailSheet .detail-info, #detailSheet > .actions, #detailSheet > .detail-block { position: relative; z-index: 2; }
-#detailSheet .detail-info::before, #detailSheet > .actions::before, #detailSheet > .detail-block::before {
-  content: ""; position: absolute; left: -14px; right: -14px; top: -10px; bottom: -10px; z-index: -1;
-  background: linear-gradient(180deg, rgba(18,22,28,.06), rgba(18,22,28,.22) 55%, rgba(18,22,28,.34));
-  border-top: 1px solid rgba(255,255,255,.08); border-bottom: 1px solid rgba(255,255,255,.05);
-  backdrop-filter: blur(13px) saturate(125%); -webkit-backdrop-filter: blur(13px) saturate(125%);
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 18%, black 86%, transparent 100%);
-  mask-image: linear-gradient(180deg, transparent 0%, black 18%, black 86%, transparent 100%);
-}
-#detailSheet .detail-meta .meta-pill, #detailSheet .episode-card, #detailSheet .person-card, #detailSheet .btn {
-  background: rgba(255,255,255,.075) !important; border-color: rgba(255,255,255,.13) !important;
-  backdrop-filter: blur(14px) saturate(135%); -webkit-backdrop-filter: blur(14px) saturate(135%);
-}
-
 </style>
 <script>
 window.TMDB_API_KEY = "d7040155454e7fdf547c4d889ebbcca7";
@@ -3860,85 +3831,24 @@ html:not(.search-focused):not(.search-active) #chips .chip{
 }
 </style>
 
-<style id="detail-ui-unified-v14">
-/* 详情页同步主界面玻璃卡片风格 */
-#detailSheet.sheet{
-  padding-left:14px!important;
-  padding-right:14px!important;
-}
 
-#detailSheet .detail-hero-bg{
-  filter:brightness(.68) saturate(1.08) blur(0px)!important;
+<style id="chips-smooth-scroll-fix">
+/* 顶部分类导航滑动优化：跟海报横向列表一致，取消顿挫感 */
+#chips-wrapper{
+  -webkit-overflow-scrolling:touch !important;
+  scroll-behavior:auto !important;
+  overscroll-behavior-x:contain !important;
+  touch-action:pan-x pan-y !important;
+  scroll-snap-type:none !important;
+  will-change:scroll-position;
 }
-
-#detailSheet .detail-info,
-#detailSheet .actions,
-#detailSheet .detail-block{
-  width:100%;
+#chips{
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-x pan-y !important;
+  scroll-snap-type:none !important;
 }
-
-#detailSheet .detail-title-row h2{
-  font-size:26px!important;
-  font-weight:850!important;
-  letter-spacing:-.3px;
-  text-shadow:0 3px 14px rgba(0,0,0,.55);
-}
-
-#detailSheet .detail-title-meta,
-#detailSheet .meta-pill{
-  background:rgba(255,255,255,.10)!important;
-  border:1px solid rgba(255,255,255,.20)!important;
-  backdrop-filter:blur(16px)!important;
-  -webkit-backdrop-filter:blur(16px)!important;
-  border-radius:999px!important;
-}
-
-#detailSheet .detail-info p{
-  background:rgba(20,26,34,.18);
-  padding:12px 0;
-  border-radius:16px;
-  color:rgba(244,247,251,.86)!important;
-  text-shadow:0 2px 8px rgba(0,0,0,.5);
-}
-
-#detailSheet .actions{
-  gap:12px!important;
-  margin-top:12px;
-}
-
-#detailSheet .actions .btn{
-  border-radius:999px!important;
-  min-height:46px!important;
-  padding:0 20px!important;
-  background:rgba(255,255,255,.10)!important;
-  border:1px solid rgba(255,255,255,.22)!important;
-  backdrop-filter:blur(18px)!important;
-  -webkit-backdrop-filter:blur(18px)!important;
-}
-
-#detailSheet #detailContinueBtn{
-  background:linear-gradient(135deg,rgba(60,180,255,.9),rgba(20,110,255,.9))!important;
-}
-
-#detailSheet .detail-block h3{
-  font-size:18px!important;
-}
-
-#detailSheet .episode-card,
-#detailSheet .person-card{
-  background:rgba(255,255,255,.08)!important;
-  border:1px solid rgba(255,255,255,.18)!important;
-  backdrop-filter:blur(18px)!important;
-  -webkit-backdrop-filter:blur(18px)!important;
-  border-radius:18px!important;
-}
-
-/* 手机详情页取消大片空白，让内容像主页一样自然排列 */
-@media (max-width:599px){
- #detailSheet .detail-spacer{
-   flex:1 0 30vh!important;
-   min-height:30vh!important;
- }
+#chips .chip{
+  touch-action:pan-x pan-y !important;
 }
 </style>
 </head>
@@ -13187,4 +13097,75 @@ html, body {
   overscroll-behavior-y: auto !important;
 }
 </style>
+
+<style id="nav-ios-native-video-feel">
+/* 视频同款：顶部导航高灵敏 iOS 横滑 */
+#chips-wrapper{
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-x: contain !important;
+  scroll-behavior: auto !important;
+  touch-action: pan-x !important;
+  will-change: scroll-position;
+}
+#chips-bar{
+  touch-action: pan-x !important;
+  transform: translateZ(0);
+  will-change: transform;
+}
+#chips .chip{
+  touch-action: pan-x !important;
+  user-select:none;
+  -webkit-user-select:none;
+}
+</style>
+<script id="nav-ios-native-drag-inertia">
+(function(){
+function initNavDrag(){
+ const wrap=document.getElementById('chips-wrapper');
+ if(!wrap || wrap.dataset.iosDrag) return;
+ wrap.dataset.iosDrag='1';
+
+ let down=false,startX=0,startScroll=0,lastX=0,lastT=0,velocity=0,raf=0;
+
+ function stop(){cancelAnimationFrame(raf);}
+
+ function moveInertia(){
+   wrap.scrollLeft += velocity;
+   velocity *= 0.92;
+   if(Math.abs(velocity)>0.2) raf=requestAnimationFrame(moveInertia);
+ }
+
+ wrap.addEventListener('touchstart',e=>{
+   if(!e.touches[0]) return;
+   down=true;
+   stop();
+   startX=lastX=e.touches[0].clientX;
+   startScroll=wrap.scrollLeft;
+   lastT=performance.now();
+   velocity=0;
+ },{passive:true});
+
+ wrap.addEventListener('touchmove',e=>{
+   if(!down || !e.touches[0]) return;
+   let x=e.touches[0].clientX;
+   let now=performance.now();
+   let dx=x-lastX;
+   wrap.scrollLeft-=dx;
+   velocity=-(dx)/(Math.max(1,now-lastT))*16;
+   lastX=x;
+   lastT=now;
+ },{passive:true});
+
+ wrap.addEventListener('touchend',()=>{
+   if(!down)return;
+   down=false;
+   requestAnimationFrame(moveInertia);
+ },{passive:true});
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initNavDrag);
+else initNavDrag();
+setTimeout(initNavDrag,1200);
+})();
+</script>
+
 </body></html>
